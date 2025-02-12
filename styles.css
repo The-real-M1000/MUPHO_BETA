@@ -42,8 +42,10 @@ body {
     padding: 1rem;
     border-right: 1px solid var(--border-color);
     background-color: var(--background-dark);
-    z-index: 999; /* Menor que el botón móvil */
+    z-index: 999;
     transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .logo {
@@ -57,6 +59,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    flex: 1;
 }
 
 .nav-item {
@@ -93,6 +96,44 @@ body {
 
 .post-button:hover {
     background-color: var(--hover-color);
+}
+
+/* Tabs mejorados */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab {
+    background: none;
+    border: none;
+    color: var(--secondary-text);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.tab:hover {
+    color: var(--text-color);
+}
+
+.tab.active {
+    color: var(--text-color);
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 4px 4px 0 0;
 }
 
 /* Contenido principal */
@@ -144,7 +185,7 @@ body {
 }
 
 /* Post images */
-.post img:not(.post-header img) {
+.post img:not(.post-header img):not(.comment img) {
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -218,6 +259,58 @@ body {
     background-color: var(--hover-color);
 }
 
+/* Barra de búsqueda mejorada */
+.search-container {
+    position: relative;
+    margin: 1rem;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    background-color: var(--hover-color);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: var(--background-dark);
+}
+
+.search-container i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary-text);
+}
+
+/* Botón de cerrar sesión mejorado */
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-top: auto;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 9999px;
+}
+
+.logout-button:hover {
+    background-color: var(--hover-color);
+    color: #ff4444;
+}
+
 /* Modal */
 .modal {
     display: none;
@@ -258,6 +351,98 @@ body {
 
 .modal-body {
     padding: 1rem;
+}
+
+/* Likes y comentarios */
+.post-actions {
+    display: flex;
+    gap: 1.5rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--secondary-text);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.action-button:hover {
+    color: var(--text-color);
+}
+
+.action-button.liked {
+    color: #ff4444;
+}
+
+.action-button i {
+    font-size: 1.25rem;
+}
+
+.comments-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.comment-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 0.5rem;
+    background-color: var(--hover-color);
+    border: 1px solid var(--border-color);
+    border-radius: 1.5rem;
+    color: var(--text-color);
+}
+
+.comment-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.comment {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.comment img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.comment-content {
+    flex: 1;
+    background-color: var(--hover-color);
+    padding: 0.75rem;
+    border-radius: 1rem;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.comment-author {
+    font-weight: 600;
+}
+
+.comment-date {
+    font-size: 0.75rem;
+    color: var(--secondary-text);
 }
 
 /* Botón móvil */
