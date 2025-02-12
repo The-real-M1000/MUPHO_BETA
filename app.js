@@ -16,6 +16,7 @@ const provider = new firebase.auth.GoogleAuthProvider();
 let currentPhotoUrl = null;
 let currentAudioUrl = null;
 let currentUser = null;
+let currentlyPlayingAudio = null;
 
 // Configuración de Cloudinary
 const cloudinaryConfig = {
@@ -31,6 +32,56 @@ const closeModal = document.querySelector('.close-modal');
 const publishButton = document.getElementById('publishPost');
 const uploadProgress = document.querySelector('.upload-progress');
 const postTemplate = document.getElementById('postTemplate');
+
+// Intersection Observer para detectar posts visibles
+const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.7  // El elemento debe estar 70% visible
+};
+
+let currentObserver = null;
+
+function setupIntersectionObserver() {
+    if (currentObserver) {
+        currentObserver.disconnect();
+    }
+
+    currentObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const postElement = entry.target;
+            const audio = postElement.querySelector('.post-audio');
+            
+            if (entry.isIntersecting) {
+                // Si hay otro audio reproduciéndose, detenerlo
+                if (currentlyPlayingAudio && currentlyPlayingAudio !== audio) {
+                    currentlyPlayingAudio.pause();
+                    currentlyPlayingAudio.currentTime = 0;
+                }
+                
+                // Reproducir el nuevo audio
+                if (audio && audio.paused) {
+                    audio.play();
+                    currentlyPlayingAudio = audio;
+                }
+            } else {
+                // Si el elemento sale del viewport, pausar su audio
+                if (audio && !audio.paused) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    if (currentlyPlayingAudio === audio) {
+                        currentlyPlayingAudio = null;
+                    }
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Observar todos los posts existentes
+    document.querySelectorAll('.post').forEach(post => {
+        currentObserver.observe(post);
+    });
+}
 
 // Event Listeners para el modal
 createPostButton.addEventListener('click', () => {
@@ -164,7 +215,6 @@ function handleLike(postId) {
     const likeCountSpan = likeButton.querySelector('.action-count');
     const isLiked = likeButton.classList.contains('liked');
     
-    // Actualizar UI inmediatamente
     if (isLiked) {
         likeButton.classList.remove('liked');
         likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1;
@@ -213,38 +263,6 @@ function handleComment(postId, commentText) {
         .catch(error => showError('Error al publicar comentario: ' + error.message));
 }
 
-// Publicar post
-publishButton.addEventListener('click', () => {
-    const title = document.getElementById('postTitle').value.trim();
-    if (!title) {
-        showError('Por favor, añade un título a tu publicación');
-        return;
-    }
-
-    if (currentPhotoUrl && currentAudioUrl) {
-        const post = {
-            title: title,
-            photoUrl: currentPhotoUrl,
-            audioUrl: currentAudioUrl,
-            userId: currentUser.uid,
-            userName: currentUser.displayName,
-            userPhoto: currentUser.photoURL,
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
-            likesCount: 0,
-            commentsCount: 0
-        };
-
-        database.ref('posts').push(post)
-            .then(() => {
-                modal.style.display = 'none';
-                resetUploadForm();
-            })
-            .catch(error => {
-                showError('Error al publicar: ' + error.message);
-            });
-    }
-});
-
 // Crear elemento de post
 function createPostElement(post, postId) {
     const postElement = postTemplate.content.cloneNode(true);
@@ -260,7 +278,11 @@ function createPostElement(post, postId) {
     postContainer.querySelector('.post-title').textContent = post.title;
     postContainer.querySelector('.post-image').src = post.photoUrl;
     postContainer.querySelector('.post-image').alt = post.title;
-    postContainer.querySelector('.post-audio').src = post.audioUrl;
+    
+    // Configurar audio
+    const audioElement = postContainer.querySelector('.post-audio');
+    audioElement.src = post.audioUrl;
+    audioElement.style.display = 'none';
     
     // Configurar contadores
     postContainer.querySelector('.like-button .action-count').textContent = post.likesCount || 0;
@@ -306,20 +328,16 @@ function loadPosts() {
         for (const post of posts) {
             let postElement;
             
-            // Si el post ya existe, reutilizarlo
             if (existingPosts.has(post.id)) {
                 postElement = existingPosts.get(post.id);
-                // Actualizar solo el contador de likes
                 const likeCount = postElement.querySelector('.like-button .action-count');
                 if (likeCount) {
                     likeCount.textContent = post.likesCount || 0;
                 }
             } else {
-                // Crear nuevo elemento para posts nuevos
                 postElement = createPostElement(post, post.id);
             }
 
-            // Verificar si el usuario actual dio like
             if (currentUser) {
                 const likeSnapshot = await database.ref(`likes/${post.id}/${currentUser.uid}`).once('value');
                 if (likeSnapshot.exists()) {
@@ -335,6 +353,9 @@ function loadPosts() {
 
         // Restaurar la posición del scroll
         window.scrollTo(0, currentScrollPosition);
+        
+        // Configurar el observer después de cargar los posts
+        setupIntersectionObserver();
     });
 }
 
