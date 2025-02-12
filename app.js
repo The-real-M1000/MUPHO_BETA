@@ -23,12 +23,14 @@ const cloudinaryConfig = {
     uploadPreset: 'mupho_preset',
     folder: 'mupho'
 };
+
 // Elementos DOM
 const modal = document.getElementById('uploadModal');
 const createPostButton = document.getElementById('createPost');
 const closeModal = document.querySelector('.close-modal');
 const publishButton = document.getElementById('publishPost');
 const uploadProgress = document.querySelector('.upload-progress');
+const postTemplate = document.getElementById('postTemplate');
 
 // Event Listeners para el modal
 createPostButton.addEventListener('click', () => {
@@ -158,19 +160,30 @@ auth.onAuthStateChanged((user) => {
 function handleLike(postId) {
     if (!currentUser) return;
     
+    const likeButton = document.querySelector(`[data-post-id="${postId}"] .like-button`);
+    const likeCountSpan = likeButton.querySelector('.action-count');
+    const isLiked = likeButton.classList.contains('liked');
+    
+    // Actualizar UI inmediatamente
+    if (isLiked) {
+        likeButton.classList.remove('liked');
+        likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1;
+    } else {
+        likeButton.classList.add('liked');
+        likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + 1;
+    }
+    
     const likeRef = database.ref(`likes/${postId}/${currentUser.uid}`);
     const postLikesCountRef = database.ref(`posts/${postId}/likesCount`);
     
     likeRef.once('value')
         .then((snapshot) => {
             if (snapshot.exists()) {
-                // Usuario ya dio like, entonces lo quitamos
                 return Promise.all([
                     likeRef.remove(),
                     postLikesCountRef.transaction(count => (count || 1) - 1)
                 ]);
             } else {
-                // Usuario no ha dado like, lo añadimos
                 return Promise.all([
                     likeRef.set(true),
                     postLikesCountRef.transaction(count => (count || 0) + 1)
@@ -194,7 +207,6 @@ function handleComment(postId, commentText) {
     
     database.ref(`comments/${postId}`).push(comment)
         .then(() => {
-            // Actualizar contador de comentarios
             return database.ref(`posts/${postId}/commentsCount`)
                 .transaction(count => (count || 0) + 1);
         })
@@ -233,6 +245,39 @@ publishButton.addEventListener('click', () => {
     }
 });
 
+// Crear elemento de post
+function createPostElement(post, postId) {
+    const postElement = postTemplate.content.cloneNode(true);
+    const postContainer = postElement.querySelector('.post');
+    
+    postContainer.setAttribute('data-post-id', postId);
+    
+    // Establecer contenido del post
+    postContainer.querySelector('.user-avatar').src = post.userPhoto;
+    postContainer.querySelector('.user-avatar').alt = post.userName;
+    postContainer.querySelector('.post-author').textContent = post.userName;
+    postContainer.querySelector('.post-date').textContent = new Date(post.timestamp).toLocaleString();
+    postContainer.querySelector('.post-title').textContent = post.title;
+    postContainer.querySelector('.post-image').src = post.photoUrl;
+    postContainer.querySelector('.post-image').alt = post.title;
+    postContainer.querySelector('.post-audio').src = post.audioUrl;
+    
+    // Configurar contadores
+    postContainer.querySelector('.like-button .action-count').textContent = post.likesCount || 0;
+    postContainer.querySelector('.comment-button .action-count').textContent = post.commentsCount || 0;
+    
+    // Event listeners
+    postContainer.querySelector('.like-button').addEventListener('click', () => handleLike(postId));
+    postContainer.querySelector('.comment-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = e.target.querySelector('.comment-input');
+        handleComment(postId, input.value);
+        input.value = '';
+    });
+    
+    return postContainer;
+}
+
 // Cargar posts
 function loadPosts() {
     const postsRef = database.ref('posts');
@@ -248,9 +293,6 @@ function loadPosts() {
         posts.sort((a, b) => b.timestamp - a.timestamp);
 
         for (const post of posts) {
-            const postElement = document.createElement('div');
-            postElement.className = 'post';
-            
             // Verificar si el usuario actual dio like
             let userLiked = false;
             if (currentUser) {
@@ -258,34 +300,10 @@ function loadPosts() {
                 userLiked = likeSnapshot.exists();
             }
             
-            postElement.innerHTML = `
-                <div class="post-header">
-                    <img src="${post.userPhoto}" alt="${post.userName}">
-                    <div>
-                        <div>${post.userName}</div>
-                        <div class="post-date">${new Date(post.timestamp).toLocaleString()}</div>
-                    </div>
-                </div>
-                <div class="post-title">${post.title}</div>
-                <img src="${post.photoUrl}" alt="${post.title}">
-                <audio controls src="${post.audioUrl}"></audio>
-                <div class="post-actions">
-                    <button class="action-button ${userLiked ? 'liked' : ''}" onclick="handleLike('${post.id}')">
-                        <i class="fas fa-heart"></i>
-                        <span>${post.likesCount || 0}</span>
-                    </button>
-                    <button class="action-button" onclick="document.querySelector('#comment-input-${post.id}').focus()">
-                        <i class="fas fa-comment"></i>
-                        <span>${post.commentsCount || 0}</span>
-                    </button>
-                </div>
-                <div class="comments-section">
-                    <form class="comment-form" onsubmit="event.preventDefault(); handleComment('${post.id}', this.querySelector('input').value); this.querySelector('input').value = '';">
-                        <input type="text" id="comment-input-${post.id}" class="comment-input" placeholder="Añade un comentario...">
-                    </form>
-                    <div id="comments-${post.id}"></div>
-                </div>
-            `;
+            const postElement = createPostElement(post, post.id);
+            if (userLiked) {
+                postElement.querySelector('.like-button').classList.add('liked');
+            }
             
             postsContainer.appendChild(postElement);
             loadComments(post.id);
@@ -297,7 +315,7 @@ function loadPosts() {
 function loadComments(postId) {
     const commentsRef = database.ref(`comments/${postId}`);
     commentsRef.on('value', (snapshot) => {
-        const commentsContainer = document.getElementById(`comments-${postId}`);
+        const commentsContainer = document.querySelector(`[data-post-id="${postId}"] .comments-container`);
         commentsContainer.innerHTML = '';
         
         const comments = [];
@@ -311,13 +329,13 @@ function loadComments(postId) {
             const commentElement = document.createElement('div');
             commentElement.className = 'comment';
             commentElement.innerHTML = `
-                <img src="${comment.userPhoto}" alt="${comment.userName}">
+                <img src="${comment.userPhoto}" alt="${comment.userName}" class="comment-avatar">
                 <div class="comment-content">
                     <div class="comment-header">
                         <span class="comment-author">${comment.userName}</span>
                         <span class="comment-date">${new Date(comment.timestamp).toLocaleString()}</span>
                     </div>
-                    <div>${comment.text}</div>
+                    <div class="comment-text">${comment.text}</div>
                 </div>
             `;
             commentsContainer.appendChild(commentElement);
