@@ -23,7 +23,6 @@ const cloudinaryConfig = {
     uploadPreset: 'mupho_preset',
     folder: 'mupho'
 };
-
 // Elementos DOM
 const modal = document.getElementById('uploadModal');
 const createPostButton = document.getElementById('createPost');
@@ -155,7 +154,54 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// Funciones para manejar posts
+// Funciones para manejar likes
+function handleLike(postId) {
+    if (!currentUser) return;
+    
+    const likeRef = database.ref(`likes/${postId}/${currentUser.uid}`);
+    const postLikesCountRef = database.ref(`posts/${postId}/likesCount`);
+    
+    likeRef.once('value')
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                // Usuario ya dio like, entonces lo quitamos
+                return Promise.all([
+                    likeRef.remove(),
+                    postLikesCountRef.transaction(count => (count || 1) - 1)
+                ]);
+            } else {
+                // Usuario no ha dado like, lo añadimos
+                return Promise.all([
+                    likeRef.set(true),
+                    postLikesCountRef.transaction(count => (count || 0) + 1)
+                ]);
+            }
+        })
+        .catch(error => showError('Error al procesar like: ' + error.message));
+}
+
+// Función para manejar comentarios
+function handleComment(postId, commentText) {
+    if (!currentUser || !commentText.trim()) return;
+    
+    const comment = {
+        userId: currentUser.uid,
+        userName: currentUser.displayName,
+        userPhoto: currentUser.photoURL,
+        text: commentText.trim(),
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+    };
+    
+    database.ref(`comments/${postId}`).push(comment)
+        .then(() => {
+            // Actualizar contador de comentarios
+            return database.ref(`posts/${postId}/commentsCount`)
+                .transaction(count => (count || 0) + 1);
+        })
+        .catch(error => showError('Error al publicar comentario: ' + error.message));
+}
+
+// Publicar post
 publishButton.addEventListener('click', () => {
     const title = document.getElementById('postTitle').value.trim();
     if (!title) {
@@ -171,7 +217,9 @@ publishButton.addEventListener('click', () => {
             userId: currentUser.uid,
             userName: currentUser.displayName,
             userPhoto: currentUser.photoURL,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            likesCount: 0,
+            commentsCount: 0
         };
 
         database.ref('posts').push(post)
@@ -185,9 +233,10 @@ publishButton.addEventListener('click', () => {
     }
 });
 
+// Cargar posts
 function loadPosts() {
     const postsRef = database.ref('posts');
-    postsRef.on('value', (snapshot) => {
+    postsRef.on('value', async (snapshot) => {
         const postsContainer = document.getElementById('posts');
         postsContainer.innerHTML = '';
         
@@ -196,12 +245,19 @@ function loadPosts() {
             posts.push({ id: childSnapshot.key, ...childSnapshot.val() });
         });
 
-        // Ordenar posts por timestamp (más recientes primero)
         posts.sort((a, b) => b.timestamp - a.timestamp);
 
-        posts.forEach(post => {
+        for (const post of posts) {
             const postElement = document.createElement('div');
             postElement.className = 'post';
+            
+            // Verificar si el usuario actual dio like
+            let userLiked = false;
+            if (currentUser) {
+                const likeSnapshot = await database.ref(`likes/${post.id}/${currentUser.uid}`).once('value');
+                userLiked = likeSnapshot.exists();
+            }
+            
             postElement.innerHTML = `
                 <div class="post-header">
                     <img src="${post.userPhoto}" alt="${post.userName}">
@@ -213,15 +269,64 @@ function loadPosts() {
                 <div class="post-title">${post.title}</div>
                 <img src="${post.photoUrl}" alt="${post.title}">
                 <audio controls src="${post.audioUrl}"></audio>
+                <div class="post-actions">
+                    <button class="action-button ${userLiked ? 'liked' : ''}" onclick="handleLike('${post.id}')">
+                        <i class="fas fa-heart"></i>
+                        <span>${post.likesCount || 0}</span>
+                    </button>
+                    <button class="action-button" onclick="document.querySelector('#comment-input-${post.id}').focus()">
+                        <i class="fas fa-comment"></i>
+                        <span>${post.commentsCount || 0}</span>
+                    </button>
+                </div>
+                <div class="comments-section">
+                    <form class="comment-form" onsubmit="event.preventDefault(); handleComment('${post.id}', this.querySelector('input').value); this.querySelector('input').value = '';">
+                        <input type="text" id="comment-input-${post.id}" class="comment-input" placeholder="Añade un comentario...">
+                    </form>
+                    <div id="comments-${post.id}"></div>
+                </div>
             `;
+            
             postsContainer.appendChild(postElement);
+            loadComments(post.id);
+        }
+    });
+}
+
+// Cargar comentarios
+function loadComments(postId) {
+    const commentsRef = database.ref(`comments/${postId}`);
+    commentsRef.on('value', (snapshot) => {
+        const commentsContainer = document.getElementById(`comments-${postId}`);
+        commentsContainer.innerHTML = '';
+        
+        const comments = [];
+        snapshot.forEach((childSnapshot) => {
+            comments.push(childSnapshot.val());
+        });
+        
+        comments.sort((a, b) => b.timestamp - a.timestamp);
+        
+        comments.forEach(comment => {
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment';
+            commentElement.innerHTML = `
+                <img src="${comment.userPhoto}" alt="${comment.userName}">
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">${comment.userName}</span>
+                        <span class="comment-date">${new Date(comment.timestamp).toLocaleString()}</span>
+                    </div>
+                    <div>${comment.text}</div>
+                </div>
+            `;
+            commentsContainer.appendChild(commentElement);
         });
     });
 }
 
 // Funcionalidad del menú móvil
 document.addEventListener('DOMContentLoaded', () => {
-    // Crear botón del menú móvil
     const mobileButton = document.createElement('button');
     mobileButton.className = 'mobile-menu-button';
     mobileButton.innerHTML = '<i class="fas fa-bars"></i>';
@@ -229,12 +334,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sidebar = document.querySelector('.sidebar');
 
-    // Toggle sidebar
     mobileButton.addEventListener('click', () => {
         sidebar.classList.toggle('active');
     });
 
-    // Cerrar sidebar al hacer click fuera
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.sidebar') && 
             !e.target.closest('.mobile-menu-button')) {
@@ -242,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Añadir lazy loading a las imágenes existentes
+    // Añadir lazy loading a las imágenes
     const images = document.querySelectorAll('img:not([loading])');
     images.forEach(img => {
         img.setAttribute('loading', 'lazy');
