@@ -1,0 +1,343 @@
+/* Variables root */
+:root {
+    --primary-color: #005C53;
+    --background-dark: #032221;
+    --text-color: #E7E9EA;
+    --secondary-text: #9DB4B3;
+    --border-color: #0B3D39;
+    --hover-color: #043B38;
+    --modal-background: rgba(3, 34, 33, 0.9);
+    --sidebar-width: 275px;
+    --trending-width: 350px;
+}
+
+/* Reset y estilos globales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+/* Layout principal */
+.app-container {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--trending-width);
+    min-height: 100vh;
+    width: 100%;
+    gap: 1rem;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    width: var(--sidebar-width);
+    height: 100vh;
+    padding: 1rem;
+    border-right: 1px solid var(--border-color);
+    background-color: var(--background-dark);
+    z-index: 999; /* Menor que el botón móvil */
+    transition: transform 0.3s ease;
+}
+
+.logo {
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+}
+
+.main-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: var(--hover-color);
+}
+
+.nav-item.active {
+    font-weight: bold;
+}
+
+.post-button {
+    width: 90%;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 9999px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.post-button:hover {
+    background-color: var(--hover-color);
+}
+
+/* Contenido principal */
+.main-content {
+    grid-column: 2 / 3;
+    border-right: 1px solid var(--border-color);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* Posts */
+.posts-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.post {
+    background-color: var(--background-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.post-header img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: var(--hover-color);
+}
+
+.post-date {
+    color: var(--secondary-text);
+    font-size: 0.875rem;
+}
+
+.post-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+/* Post images */
+.post img:not(.post-header img) {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
+    border-radius: 1rem;
+    margin: 0.5rem 0;
+    background-color: var(--hover-color);
+}
+
+/* Preview images */
+#preview img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 1rem;
+    margin: 0.5rem 0;
+    background-color: var(--hover-color);
+}
+
+/* Login section */
+.login-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.login-card {
+    background-color: var(--background-dark);
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+}
+
+.login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+/* User info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: var(--hover-color);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-background);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto;
+    background-color: var(--background-dark);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 1rem;
+}
+
+/* Botón móvil */
+.mobile-menu-button {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    :root {
+        --trending-width: 300px;
+    }
+
+    .post img:not(.post-header img),
+    #preview img {
+        max-height: 500px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .app-container {
+        grid-template-columns: var(--sidebar-width) 1fr;
+    }
+
+    .trending {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr;
+    }
+
+    .mobile-menu-button {
+        display: block;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        padding-top: 4rem;
+    }
+
+    .post img:not(.post-header img),
+    #preview img {
+        max-height: 400px;
+    }
+
+    .modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .post img:not(.post-header img),
+    #preview img {
+        max-height: 300px;
+    }
+
+    .posts-container {
+        padding: 0.5rem;
+    }
+}

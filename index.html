@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mupho</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-music"></i>
+            </div>
+            <nav class="main-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    <span>Explorar</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Notificaciones</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Perfil</span>
+                </a>
+                <!-- Botón de cerrar sesión en el menú de perfil -->
+                <button id="logout" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </nav>
+            <button id="createPost" class="post-button">
+                <i class="fas fa-plus"></i>
+                <span>Crear Post</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="loginSection" class="login-section">
+                <div class="login-card">
+                    <i class="fas fa-music logo-large"></i>
+                    <h1>Bienvenido a Mupho</h1>
+                    <p>Comparte tus momentos con música</p>
+                    <button id="loginButton" class="login-button">
+                        <i class="fab fa-google"></i>
+                        Iniciar sesión con Google
+                    </button>
+                </div>
+            </div>
+
+            <div id="uploadSection" class="upload-section" style="display: none;">
+                <header class="content-header">
+                    <div class="tabs">
+                        <button class="tab active">Para ti</button>
+                        <button class="tab">Siguiendo</button>
+                        <button class="tab">Popular</button>
+                        <button class="tab">Nuevo</button>
+                    </div>
+                </header>
+
+                <div id="userInfo" class="user-info"></div>
+                <div id="errorMessage" class="error"></div>
+                <div id="posts" class="posts-container"></div>
+            </div>
+        </main>
+
+        <!-- Trending Section -->
+        <aside class="trending">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar en Mupho">
+            </div>
+            <div class="trending-section">
+                <h2>Tendencias</h2>
+                <div class="trending-item">
+                    <span class="category">Música • Tendencia</span>
+                    <strong>#NuevoLanzamiento</strong>
+                    <span class="posts-count">2,543 posts</span>
+                </div>
+                <div class="trending-item">
+                    <span class="category">Popular en tu área</span>
+                    <strong>#MúsicaLocal</strong>
+                    <span class="posts-count">1,234 posts</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-modal">&times;</button>
+                <h2>Crear nueva publicación</h2>
+                <button id="publishPost" class="publish-button" disabled>Publicar</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-progress"></div>
+                <div class="user-input">
+                    <input type="text" id="postTitle" placeholder="¿Qué estás escuchando?">
+                </div>
+                <div class="upload-options">
+                    <div id="preview" class="preview-container"></div>
+                    <div class="upload-buttons">
+                        <button id="uploadPhoto" class="upload-button">
+                            <i class="fas fa-image"></i>
+                            Foto
+                        </button>
+                        <button id="uploadAudio" class="upload-button">
+                            <i class="fas fa-music"></i>
+                            Audio
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
