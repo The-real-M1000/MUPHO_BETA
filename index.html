@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mupho</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <!-- Cloudinary Script -->
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -17,6 +20,7 @@
         <aside class="sidebar">
             <div class="logo">
                 <i class="fas fa-music"></i>
+                <span>Mupho</span>
             </div>
             <nav class="main-nav">
                 <a href="#" class="nav-item active">
@@ -35,20 +39,22 @@
                     <i class="fas fa-user"></i>
                     <span>Perfil</span>
                 </a>
-                <!-- Botón de cerrar sesión en el menú de perfil -->
+            </nav>
+            <div class="sidebar-actions">
+                <button id="createPost" class="post-button">
+                    <i class="fas fa-plus"></i>
+                    <span>Crear Post</span>
+                </button>
                 <button id="logout" class="logout-button">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar sesión</span>
                 </button>
-            </nav>
-            <button id="createPost" class="post-button">
-                <i class="fas fa-plus"></i>
-                <span>Crear Post</span>
-            </button>
+            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Login Section -->
             <div id="loginSection" class="login-section">
                 <div class="login-card">
                     <i class="fas fa-music logo-large"></i>
@@ -61,6 +67,7 @@
                 </div>
             </div>
 
+            <!-- Upload Section -->
             <div id="uploadSection" class="upload-section" style="display: none;">
                 <header class="content-header">
                     <div class="tabs">
@@ -72,7 +79,7 @@
                 </header>
 
                 <div id="userInfo" class="user-info"></div>
-                <div id="errorMessage" class="error"></div>
+                <div id="errorMessage" class="error-message"></div>
                 <div id="posts" class="posts-container"></div>
             </div>
         </main>
@@ -117,11 +124,11 @@
                     <div class="upload-buttons">
                         <button id="uploadPhoto" class="upload-button">
                             <i class="fas fa-image"></i>
-                            Foto
+                            <span>Foto</span>
                         </button>
                         <button id="uploadAudio" class="upload-button">
                             <i class="fas fa-music"></i>
-                            Audio
+                            <span>Audio</span>
                         </button>
                     </div>
                 </div>
@@ -129,6 +136,48 @@
         </div>
     </div>
 
+    <!-- Template for posts (hidden) -->
+    <template id="postTemplate">
+        <div class="post">
+            <div class="post-header">
+                <img src="" alt="" class="user-avatar">
+                <div class="post-user-info">
+                    <div class="post-author"></div>
+                    <div class="post-date"></div>
+                </div>
+            </div>
+            <div class="post-title"></div>
+            <img class="post-image" src="" alt="">
+            <audio class="post-audio" controls></audio>
+            <div class="post-actions">
+                <button class="action-button like-button">
+                    <i class="fas fa-heart"></i>
+                    <span class="action-count">0</span>
+                </button>
+                <button class="action-button comment-button">
+                    <i class="fas fa-comment"></i>
+                    <span class="action-count">0</span>
+                </button>
+            </div>
+            <div class="comments-section">
+                <form class="comment-form">
+                    <input type="text" class="comment-input" placeholder="Añade un comentario...">
+                    <button type="submit" class="comment-submit">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="comments-container"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-button">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- App Script -->
     <script src="app.js"></script>
 </body>
 </html>
+
