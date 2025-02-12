@@ -1,13 +1,14 @@
 :root {
-    --primary-color: #00756A; /* Un verde azulado más vibrante para destacar */
-    --background-dark: #021C1B; /* Aún más oscuro para mayor profundidad */
-    --text-color: #F1F3F4; /* Blanco suave para mayor legibilidad */
-    --secondary-text: #A1C6C4; /* Un tono más brillante para resaltar contenido secundario */
-    --border-color: #0D4F49; /* Mayor contraste con el fondo */
-    --hover-color: #059487; /* Un verde-agua llamativo para resaltar interacciones */
-    --modal-background: rgba(2, 28, 27, 0.92); /* Más opacidad para mejor lectura */
-    --button-color: #00A99D; /* Un color distintivo para botones importantes */
-    --like-color: #FF4F5E; /* Un rojo vibrante para interacciones */
+    --primary-color: #0061A8; /* Azul vibrante y moderno (inspirado en el océano y la tecnología) */
+    --background-dark: #0A0F1E; /* Azul casi negro, elegante y profundo */
+    --text-color: #F5F7FA; /* Blanco suave para una lectura cómoda */
+    --secondary-text: #A6B5C4; /* Gris azulado para contenido secundario */
+    --border-color: #1C2D4F; /* Azul oscuro para una separación sutil */
+    --hover-color: #008ECF; /* Azul cian brillante para efectos interactivos */
+    --modal-background: rgba(10, 15, 30, 0.92); /* Fondo de modal con opacidad elegante */
+    --button-color: #FF3366; /* Rosa vibrante para contrastar y destacar botones */
+    --like-color: #FF505F; /* Rojo coral para interacciones llamativas */
+    --accent-color: #FFD700; /* Amarillo dorado para resaltar detalles premium */
     --sidebar-width: 275px;
     --trending-width: 350px;
 }
