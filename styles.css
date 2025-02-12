@@ -1,15 +1,17 @@
-/* Variables root */
 :root {
-    --primary-color: #005C53;
-    --background-dark: #032221;
-    --text-color: #E7E9EA;
-    --secondary-text: #9DB4B3;
-    --border-color: #0B3D39;
-    --hover-color: #043B38;
-    --modal-background: rgba(3, 34, 33, 0.9);
+    --primary-color: #00756A; /* Un verde azulado más vibrante para destacar */
+    --background-dark: #021C1B; /* Aún más oscuro para mayor profundidad */
+    --text-color: #F1F3F4; /* Blanco suave para mayor legibilidad */
+    --secondary-text: #A1C6C4; /* Un tono más brillante para resaltar contenido secundario */
+    --border-color: #0D4F49; /* Mayor contraste con el fondo */
+    --hover-color: #059487; /* Un verde-agua llamativo para resaltar interacciones */
+    --modal-background: rgba(2, 28, 27, 0.92); /* Más opacidad para mejor lectura */
+    --button-color: #00A99D; /* Un color distintivo para botones importantes */
+    --like-color: #FF4F5E; /* Un rojo vibrante para interacciones */
     --sidebar-width: 275px;
     --trending-width: 350px;
 }
+
 
 /* Reset y estilos globales */
 * {
