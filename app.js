@@ -160,9 +160,13 @@ auth.onAuthStateChanged((user) => {
 function handleLike(postId) {
     if (!currentUser) return;
     
+    // Obtener elementos
     const likeButton = document.querySelector(`[data-post-id="${postId}"] .like-button`);
     const likeCountSpan = likeButton.querySelector('.action-count');
     const isLiked = likeButton.classList.contains('liked');
+    
+    // Prevenir comportamiento por defecto
+    event.preventDefault();
     
     // Actualizar UI inmediatamente
     if (isLiked) {
