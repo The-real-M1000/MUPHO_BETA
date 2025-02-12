@@ -1,11 +1,11 @@
 :root {
-    --primary-color: #D96704; /* Rojo anaranjado vibrante */
-    --background-dark: #400505; /* Rojo oscuro profundo */
-    --text-color: #E4E9F2; /* Blanco suave para legibilidad */
-    --secondary-text: #D9B504; /* Amarillo dorado para contraste */
-    --border-color: #027353; /* Verde oscuro para separar elementos */
-    --hover-color: #05A63D; /* Verde brillante para resaltar */
-    --modal-background: rgba(63, 5, 5, 0.92); /* Fondo de modal con opacidad */
+    --primary-color: #D96704;
+    --background-dark: #400505;
+    --text-color: #E4E9F2;
+    --secondary-text: #D9B504;
+    --border-color: #027353;
+    --hover-color: #05A63D;
+    --modal-background: rgba(63, 5, 5, 0.92);
     --sidebar-width: 275px;
     --trending-width: 350px;
 }
