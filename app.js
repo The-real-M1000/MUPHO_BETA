@@ -283,7 +283,8 @@ function loadPosts() {
     const postsRef = database.ref('posts');
     postsRef.on('value', async (snapshot) => {
         const postsContainer = document.getElementById('posts');
-        postsContainer.innerHTML = '';
+        const currentPosts = Array.from(postsContainer.children);
+        const currentScrollPosition = window.scrollY;
         
         const posts = [];
         snapshot.forEach((childSnapshot) => {
@@ -292,22 +293,48 @@ function loadPosts() {
 
         posts.sort((a, b) => b.timestamp - a.timestamp);
 
+        // Crear un mapa de los posts existentes
+        const existingPosts = new Map();
+        currentPosts.forEach(post => {
+            const postId = post.getAttribute('data-post-id');
+            existingPosts.set(postId, post);
+        });
+
+        // Limpiar el contenedor
+        postsContainer.innerHTML = '';
+
         for (const post of posts) {
+            let postElement;
+            
+            // Si el post ya existe, reutilizarlo
+            if (existingPosts.has(post.id)) {
+                postElement = existingPosts.get(post.id);
+                // Actualizar solo el contador de likes
+                const likeCount = postElement.querySelector('.like-button .action-count');
+                if (likeCount) {
+                    likeCount.textContent = post.likesCount || 0;
+                }
+            } else {
+                // Crear nuevo elemento para posts nuevos
+                postElement = createPostElement(post, post.id);
+            }
+
             // Verificar si el usuario actual dio like
-            let userLiked = false;
             if (currentUser) {
                 const likeSnapshot = await database.ref(`likes/${post.id}/${currentUser.uid}`).once('value');
-                userLiked = likeSnapshot.exists();
-            }
-            
-            const postElement = createPostElement(post, post.id);
-            if (userLiked) {
-                postElement.querySelector('.like-button').classList.add('liked');
+                if (likeSnapshot.exists()) {
+                    postElement.querySelector('.like-button').classList.add('liked');
+                } else {
+                    postElement.querySelector('.like-button').classList.remove('liked');
+                }
             }
             
             postsContainer.appendChild(postElement);
             loadComments(post.id);
         }
+
+        // Restaurar la posición del scroll
+        window.scrollTo(0, currentScrollPosition);
     });
 }
 
