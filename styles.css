@@ -1,11 +1,14 @@
 :root {
-    --primary-color: #363740; /* Gris oscuro, neutro y sofisticado */
-    --background-dark: #2B2C34; /* Negro grisáceo profundo para elegancia */
-    --text-color: #E4E9F2; /* Blanco grisáceo para una lectura suave */
-    --secondary-text: #9298A6; /* Gris medio para contenido secundario */
-    --border-color: #626673; /* Gris más oscuro para sutil separación */
-    --hover-color: #4A4D5B; /* Un gris azulado más profundo para efectos interactivos */
-    --modal-background: rgba(43, 44, 52, 0.92); /* Fondo de modal con ligera opacidad */
+    --primary-color: #0061A8; /* Azul vibrante y moderno (inspirado en el océano y la tecnología) */
+    --background-dark: #0A0F1E; /* Azul casi negro, elegante y profundo */
+    --text-color: #F5F7FA; /* Blanco suave para una lectura cómoda */
+    --secondary-text: #A6B5C4; /* Gris azulado para contenido secundario */
+    --border-color: #1C2D4F; /* Azul oscuro para una separación sutil */
+    --hover-color: #008ECF; /* Azul cian brillante para efectos interactivos */
+    --modal-background: rgba(10, 15, 30, 0.92); /* Fondo de modal con opacidad elegante */
+    --button-color: #FF3366; /* Rosa vibrante para contrastar y destacar botones */
+    --like-color: #FF505F; /* Rojo coral para interacciones llamativas */
+    --accent-color: #FFD700; /* Amarillo dorado para resaltar detalles premium */
     --sidebar-width: 275px;
     --trending-width: 350px;
 }
