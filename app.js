@@ -160,13 +160,9 @@ auth.onAuthStateChanged((user) => {
 function handleLike(postId) {
     if (!currentUser) return;
     
-    // Obtener elementos
     const likeButton = document.querySelector(`[data-post-id="${postId}"] .like-button`);
     const likeCountSpan = likeButton.querySelector('.action-count');
     const isLiked = likeButton.classList.contains('liked');
-    
-    // Prevenir comportamiento por defecto
-    event.preventDefault();
     
     // Actualizar UI inmediatamente
     if (isLiked) {
@@ -347,6 +343,53 @@ function loadComments(postId) {
     });
 }
 
+// Theme Switching Functionality
+const settingsModal = document.getElementById('settingsModal');
+const settingsLink = document.getElementById('settingsLink');
+const closeSettings = document.getElementById('closeSettings');
+const themeOptions = document.querySelectorAll('.theme-option');
+
+// Show settings modal
+settingsLink.addEventListener('click', () => {
+    settingsModal.style.display = 'flex';
+});
+
+// Close settings modal
+closeSettings.addEventListener('click', () => {
+    settingsModal.style.display = 'none';
+});
+
+// Close modal when clicking outside
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+        settingsModal.style.display = 'none';
+    }
+});
+
+// Theme switching
+function setTheme(themeName) {
+    // Remove all theme classes
+    document.documentElement.classList.remove('theme-neowave', 'theme-ecotech', 'theme-minimal');
+    
+    // Add selected theme class
+    if (themeName) {
+        document.documentElement.classList.add(`theme-${themeName}`);
+        localStorage.setItem('selectedTheme', themeName);
+    }
+    
+    // Update active state in theme options
+    themeOptions.forEach(option => {
+        option.classList.toggle('active', option.dataset.theme === themeName);
+    });
+}
+
+// Theme option click handlers
+themeOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        setTheme(option.dataset.theme);
+    });
+});
+
 // Funcionalidad del menú móvil
 document.addEventListener('DOMContentLoaded', () => {
     const mobileButton = document.createElement('button');
@@ -372,4 +415,10 @@ document.addEventListener('DOMContentLoaded', () => {
     images.forEach(img => {
         img.setAttribute('loading', 'lazy');
     });
+
+    // Load saved theme on startup
+    const savedTheme = localStorage.getItem('selectedTheme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    }
 });
