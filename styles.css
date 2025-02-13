@@ -41,6 +41,21 @@
     --hover-color: #4A4D5B;
     --modal-background: rgba(43, 44, 52, 0.92);
 }
+/* Estilos para el botón de aplicar tema */
+.apply-theme-button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.apply-theme-button:hover {
+    background-color: var(--hover-color);
+}
 
 /* Reset y estilos globales */
 * {
