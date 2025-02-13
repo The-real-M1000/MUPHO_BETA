@@ -347,10 +347,10 @@ const settingsModal = document.getElementById('settingsModal');
 const settingsLink = document.getElementById('settingsLink');
 const closeSettings = document.getElementById('closeSettings');
 const themeOptions = document.querySelectorAll('.theme-option');
-const applyThemeButton = document.createElement('button');
 
-// Configurar el botón de aplicar tema
-applyThemeButton.className = 'publish-button';
+// Crear botón de aplicar tema
+const applyThemeButton = document.createElement('button');
+applyThemeButton.className = 'apply-theme-button';
 applyThemeButton.textContent = 'Aplicar tema';
 applyThemeButton.style.display = 'none';
 
@@ -362,92 +362,82 @@ let selectedTheme = null;
 // Show settings modal
 settingsLink.addEventListener('click', () => {
     settingsModal.style.display = 'flex';
-    // Restaurar el tema actualmente seleccionado
-    const currentTheme = localStorage.getItem('selectedTheme');
-    if (currentTheme) {
-        themeOptions.forEach(option => {
-            option.classList.toggle('active', option.dataset.theme === currentTheme);
-        });
-    }
+    // Mostrar tema activo
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    themeOptions.forEach(option => {
+        option.classList.toggle('active', option.dataset.theme === currentTheme);
+    });
 });
 
 // Close settings modal
 closeSettings.addEventListener('click', () => {
     settingsModal.style.display = 'none';
-    // Si no se aplicó el tema, restaurar la selección anterior
-    if (selectedTheme) {
-        themeOptions.forEach(option => {
-            option.classList.remove('active');
-        });
-        const currentTheme = localStorage.getItem('selectedTheme');
-        if (currentTheme) {
-            const currentOption = document.querySelector(`[data-theme="${currentTheme}"]`);
-            if (currentOption) {
-                currentOption.classList.add('active');
-            }
-        }
-    }
+    resetThemeSelection();
 });
 
 // Close modal when clicking outside
 settingsModal.addEventListener('click', (e) => {
     if (e.target === settingsModal) {
         settingsModal.style.display = 'none';
-        // Restaurar selección si no se aplicó
-        if (selectedTheme) {
-            themeOptions.forEach(option => {
-                option.classList.remove('active');
-            });
-            const currentTheme = localStorage.getItem('selectedTheme');
-            if (currentTheme) {
-                const currentOption = document.querySelector(`[data-theme="${currentTheme}"]`);
-                if (currentOption) {
-                    currentOption.classList.add('active');
-                }
-            }
-        }
+        resetThemeSelection();
     }
 });
 
 // Theme option click handlers
 themeOptions.forEach(option => {
     option.addEventListener('click', () => {
-        // Remover clase active de todas las opciones
         themeOptions.forEach(opt => opt.classList.remove('active'));
-        // Añadir clase active a la opción seleccionada
         option.classList.add('active');
         selectedTheme = option.dataset.theme;
-        // Mostrar el botón de aplicar
         applyThemeButton.style.display = 'block';
+        
+        // Preview del tema
+        previewTheme(selectedTheme);
     });
 });
 
-// Aplicar tema cuando se hace click en el botón
+// Aplicar tema
 applyThemeButton.addEventListener('click', () => {
     if (selectedTheme) {
         setTheme(selectedTheme);
-        // Ocultar el botón después de aplicar
         applyThemeButton.style.display = 'none';
-        // Cerrar el modal
         settingsModal.style.display = 'none';
-        // Limpiar la selección temporal
         selectedTheme = null;
     }
 });
 
-// Theme switching function (mantener la función existente)
 function setTheme(themeName) {
-    // Remove all theme classes
-    document.documentElement.classList.remove('theme-neowave', 'theme-ecotech', 'theme-minimal');
+    // Eliminar tema actual
+    document.documentElement.removeAttribute('data-theme');
     
-    // Add selected theme class
+    // Aplicar nuevo tema
     if (themeName) {
-        document.documentElement.classList.add(`theme-${themeName}`);
+        document.documentElement.setAttribute('data-theme', themeName);
         localStorage.setItem('selectedTheme', themeName);
     }
 }
 
-// Load saved theme on startup
+function previewTheme(themeName) {
+    // Preview temporal del tema
+    document.documentElement.setAttribute('data-theme', themeName);
+}
+
+function resetThemeSelection() {
+    // Restaurar tema guardado
+    const savedTheme = localStorage.getItem('selectedTheme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+        themeOptions.forEach(option => {
+            option.classList.toggle('active', option.dataset.theme === savedTheme);
+        });
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+    applyThemeButton.style.display = 'none';
+    selectedTheme = null;
+}
+
+// Cargar tema guardado al iniciar
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('selectedTheme');
     if (savedTheme) {
