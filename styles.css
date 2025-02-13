@@ -1,15 +1,46 @@
+/* Theme Classes */
+.theme-neowave {
+    --primary-color: #0061A8;
+    --background-dark: #0A0F1E;
+    --text-color: #F5F7FA;
+    --secondary-text: #A6B5C4;
+    --border-color: #1C2D4F;
+    --hover-color: #008ECF;
+    --modal-background: rgba(10, 15, 30, 0.92);
+}
+
+.theme-ecotech {
+    --primary-color: #00756A;
+    --background-dark: #021C1B;
+    --text-color: #F1F3F4;
+    --secondary-text: #A1C6C4;
+    --border-color: #0D4F49;
+    --hover-color: #059487;
+    --modal-background: rgba(2, 28, 27, 0.92);
+}
+
+.theme-minimal {
+    --primary-color: #363740;
+    --background-dark: #2B2C34;
+    --text-color: #E4E9F2;
+    --secondary-text: #9298A6;
+    --border-color: #626673;
+    --hover-color: #4A4D5B;
+    --modal-background: rgba(43, 44, 52, 0.92);
+}
+
+/* Variables root */
 :root {
-    --primary-color: #D9320D; /* Rojo intenso y llamativo */
-    --background-dark: #262626; /* Negro grisáceo profundo */
-    --text-color: #F25E3D; /* Naranja rojizo vibrante para contraste */
-    --secondary-text: #A60303; /* Rojo oscuro para contenido secundario */
-    --border-color: #73030D; /* Rojo profundo para separación */
-    --hover-color: #9E120D; /* Rojo más oscuro para interacción */
-    --modal-background: rgba(38, 38, 38, 0.92); /* Modal oscuro con opacidad */
+    --primary-color: #005C53;
+    --background-dark: #032221;
+    --text-color: #E7E9EA;
+    --secondary-text: #9DB4B3;
+    --border-color: #0B3D39;
+    --hover-color: #043B38;
+    --modal-background: rgba(3, 34, 33, 0.9);
     --sidebar-width: 275px;
     --trending-width: 350px;
 }
-
 
 /* Reset y estilos globales */
 * {
@@ -312,7 +343,7 @@ body {
 }
 
 /* Modal */
-.modal {
+.modal, .settings-modal {
     display: none;
     position: fixed;
     top: 0;
@@ -351,6 +382,39 @@ body {
 
 .modal-body {
     padding: 1rem;
+}
+
+/* Settings Modal Styles */
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.theme-option:hover {
+    background-color: var(--hover-color);
+}
+
+.theme-option.active {
+    border-color: var(--primary-color);
+    background-color: var(--hover-color);
+}
+
+.color-preview {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+}
+
+.theme-option .color-preview.primary {
+    background-color: var(--primary-color);
 }
 
 /* Likes y comentarios */
@@ -476,8 +540,7 @@ body {
 
 @media (max-width: 1024px) {
     .app-container {
-        grid-template-columns: var(--sidebar-width) 1fr;
-    }
+        grid-template-columns: var(--sidebar-width) 1fr;}
 
     .trending {
         display: none;
